@@ -75,7 +75,7 @@ export default function EmployeeDetails() {
                         <div className="space-y-4">
                             <div>
                                 <label className={labelClasses}>Date</label>
-                                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClasses} />
+                                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} max={new Date().toISOString().split('T')[0]} className={inputClasses} />
                             </div>
 
                             <div>
