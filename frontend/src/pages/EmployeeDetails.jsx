@@ -1,15 +1,18 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import Loader from "../components/Loader";
 
 export default function EmployeeDetails() {
     const { id } = useParams();
     const [records, setRecords] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("Present");
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [employeeName, setEmployeeName] = useState("Employee"); // Add state for name locally if possible or derive
 
     const fetchAttendance = async () => {
+        setLoading(true);
         try {
             const res = await API.get(`/attendance/${id}`);
             setRecords(res.data);
@@ -19,12 +22,16 @@ export default function EmployeeDetails() {
             }
         } catch (e) {
             console.error(e);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAttendance();
     }, []);
+
+    if (loading) return <Loader />;
 
     const markAttendance = async () => {
         try {
@@ -51,8 +58,10 @@ export default function EmployeeDetails() {
     return (
         <div className="max-w-7xl mx-auto p-6 sm:px-6 lg:px-8 py-10">
             <div className="mb-6">
-                <Link to="/" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
-                    &larr; Back to Dashboard
+                <Link to="/" className="inline-flex items-center justify-center p-2 border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 hover:text-indigo-600 rounded-xl transition-all shadow-sm cursor-pointer" title="Back to Dashboard">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
                 </Link>
             </div>
 
@@ -82,7 +91,7 @@ export default function EmployeeDetails() {
                                 </div>
                             </div>
 
-                            <button onClick={markAttendance} className="w-full mt-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 active:scale-95 transition-all font-medium text-sm shadow-lg shadow-indigo-600/20">
+                            <button onClick={markAttendance} className="w-full mt-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 active:scale-95 transition-all font-medium text-sm shadow-lg shadow-indigo-600/20 cursor-pointer">
                                 Save Record
                             </button>
                         </div>

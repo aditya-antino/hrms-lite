@@ -1,12 +1,34 @@
 import { Link } from "react-router-dom";
 import API from "../services/api";
+import { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function EmployeeList({ employees, refresh }) {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
-    const deleteEmployee = async (id) => {
-        if (!confirm("Are you sure you want to delete this employee?")) return;
-        await API.delete(`/employees/${id}`);
-        refresh();
+    const handleDeleteClick = (id) => {
+        setEmployeeToDelete(id);
+        setIsDialogOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!employeeToDelete) return;
+        try {
+            await API.delete(`/employees/${employeeToDelete}`);
+            refresh();
+        } catch (error) {
+            console.error("Failed to delete employee", error);
+            alert("Failed to delete employee");
+        } finally {
+            setIsDialogOpen(false);
+            setEmployeeToDelete(null);
+        }
+    };
+
+    const cancelDelete = () => {
+        setIsDialogOpen(false);
+        setEmployeeToDelete(null);
     };
 
     return (
@@ -33,9 +55,19 @@ export default function EmployeeList({ employees, refresh }) {
                                         {emp.department}
                                     </span>
                                 </td>
-                                <td className="p-4 text-sm text-right space-x-3">
-                                    <Link to={`/employee/${emp._id}`} className="text-indigo-600 hover:text-indigo-900 font-medium text-xs transition-colors">View</Link>
-                                    <button onClick={() => deleteEmployee(emp._id)} className="text-red-500 hover:text-red-700 font-medium text-xs transition-colors">Delete</button>
+                                <td className="p-4 text-sm text-right space-x-2">
+                                    <Link
+                                        to={`/employee/${emp._id}`}
+                                        className="inline-flex items-center px-3 py-1.5 border border-indigo-200 text-xs font-medium rounded-lg text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
+                                    >
+                                        View
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDeleteClick(emp._id)}
+                                        className="inline-flex items-center px-3 py-1.5 border border-red-200 text-xs font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -49,6 +81,16 @@ export default function EmployeeList({ employees, refresh }) {
                     </tbody>
                 </table>
             </div>
+
+            <ConfirmDialog
+                isOpen={isDialogOpen}
+                title="Delete Employee"
+                message="Are you sure you want to delete this employee? This action cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
+                confirmText="Delete"
+                isDangerous={true}
+            />
         </div>
     );
 }
