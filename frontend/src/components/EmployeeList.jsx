@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import API from "../services/api";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import ConfirmDialog from "./ConfirmDialog";
 
 export default function EmployeeList({ employees, refresh }) {
@@ -16,10 +17,11 @@ export default function EmployeeList({ employees, refresh }) {
         if (!employeeToDelete) return;
         try {
             await API.delete(`/employees/${employeeToDelete}`);
+            toast.success("Employee deleted successfully");
             refresh();
         } catch (error) {
             console.error("Failed to delete employee", error);
-            alert("Failed to delete employee");
+            toast.error("Failed to delete employee");
         } finally {
             setIsDialogOpen(false);
             setEmployeeToDelete(null);

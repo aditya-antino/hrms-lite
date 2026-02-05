@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import API from "../services/api";
 
 export default function EmployeeForm({ refresh }) {
@@ -17,10 +18,11 @@ export default function EmployeeForm({ refresh }) {
         e.preventDefault();
         try {
             await API.post("/employees", form);
+            toast.success("Employee added successfully");
             setForm({ employeeId: "", name: "", email: "", department: "" });
             refresh();
         } catch (err) {
-            alert(err.response?.data?.error || "Error");
+            toast.error(err.response?.data?.error || "Error adding employee");
         }
     };
 

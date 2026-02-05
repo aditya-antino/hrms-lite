@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import API from "../services/api";
 import Loader from "../components/Loader";
 
@@ -35,15 +36,17 @@ export default function EmployeeDetails() {
     const markAttendance = async () => {
         try {
             await API.post("/attendance", {
-                employeeId: id, 
+                employeeId: id,
                 date,
                 status
             });
 
             setDate(new Date().toISOString().split('T')[0]);
+            toast.success("Attendance marked successfully");
             fetchAttendance();
-        } catch {
-            alert("Error marking attendance. (Ensure employee has at least one record or logic is updated)");
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || "Error marking attendance";
+            toast.error(errorMessage);
         }
     };
 
