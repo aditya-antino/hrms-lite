@@ -9,14 +9,13 @@ export default function EmployeeDetails() {
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("Present");
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const [employeeName, setEmployeeName] = useState("Employee"); // Add state for name locally if possible or derive
+    const [employeeName, setEmployeeName] = useState("Employee");
 
     const fetchAttendance = async () => {
         setLoading(true);
         try {
             const res = await API.get(`/attendance/${id}`);
             setRecords(res.data);
-            // Try to extract name from the first record if available, just for display
             if (res.data.length > 0 && res.data[0].employee) {
                 setEmployeeName(res.data[0].employee.name);
             }
@@ -35,12 +34,8 @@ export default function EmployeeDetails() {
 
     const markAttendance = async () => {
         try {
-            // Fallback: if no records, we might be stuck. 
-            // Ideally we should fetch employee details separately.
-            // keeping original logic but wrapped safely
-
             await API.post("/attendance", {
-                employeeId: id, // Note: this might be undefined if no history. 
+                employeeId: id, 
                 date,
                 status
             });
