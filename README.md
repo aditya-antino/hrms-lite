@@ -3,7 +3,7 @@
 A lightweight Human Resource Management System (HRMS) designed to simplify employee management and attendance tracking.
 
 ## Deployed Application
-**URL:** [Insert Deployed URL Here]
+**URL:** https://hrms-lite-three-eta.vercel.app/
 
 ## Features
 
