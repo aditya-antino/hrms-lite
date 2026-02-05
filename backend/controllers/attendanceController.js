@@ -21,6 +21,16 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
+    const existingAttendance = await Attendance.findOne({
+      employee: employeeId,
+      date: date,
+    });
+    if (existingAttendance) {
+      return res.status(409).json({
+        error: "Attendance already marked for this employee on this date",
+      });
+    }
+
     const attendance = await Attendance.create({
       employee: employee._id,
       date,
